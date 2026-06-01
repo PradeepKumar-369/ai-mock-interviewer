@@ -18,4 +18,4 @@ An AI-powered mock interview platform that conducts dynamic, voice-enabled techn
 
 ---
 ## 👨‍💻 Author
-**[YOUR_NAME]** *B.Tech CSE (Class of 2027) | Malla Reddy College of Engineering & Technology (MRCET)* *Full-Stack AI Developer*mv ai-interviewer/README.md .
+**[Pradeep Kumar Mantri]** *B.Tech CSE (Class of 2027) | Malla Reddy College of Engineering & Technology (MRCET)* *Full-Stack AI Developer*mv ai-interviewer/README.md .
