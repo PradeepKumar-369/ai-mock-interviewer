@@ -13,9 +13,8 @@ app = FastAPI()
 client = OpenAI(
     api_key=os.getenv("GROQ_API_KEY"),
     base_url="https://api.groq.com/openai/v1"
-    )
+)
 
-# CORS permission for allowing the requestes from frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -24,33 +23,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/hello")
-def read_root():
-    return {"message": "Backend Connected Success! AI Engine Ready."}
-
-# Individual message structure define chesthunnam
 class ChatMessage(BaseModel):
-    role: str      # Deenlo 'user' (candidate) leda 'assistant' (AI) untundi
-    content: str   # Actual text message
+    role: str      
+    content: str   
 
-# Kotha Model: Ippudu Job Description kooda theeskuntundi
 class InterviewHistory(BaseModel):
+    resume: str
     job_description: str
     history: List[ChatMessage]
 
 @app.post("/api/chat")
 def chat_with_ai(data: InterviewHistory):
     try:
-        # Prompt ni poorthiga real-world recruiter laaga marcham
-        system_prompt = f"""You are a professional Tech Recruiter conducting an interview. 
-        Context / Role / Job Description provided by the candidate: {data.job_description}. 
-        Rules:
-        1. If a full Job Description is provided, ask questions based on it. If a specific role (like TCS NQT) or skill set is mentioned, tailor your questions to evaluate their specific skills and core computer science fundamentals.
-        2. Ask one focused question at a time. Tailor follow-up questions based on the candidate's previous answers.
-        3. If the candidate doesn't know an answer, react naturally and empathetically.
-        4. Do NOT stick to a fixed number of questions. Decide dynamically when you have enough signal to evaluate them.
-        5. Once you have enough information, conclude the interview politely. 
-        6. IMPORTANT: ONLY in your very last concluding message, you MUST append the exact string [END_INTERVIEW] at the end."""
+        system_prompt = f"""You are a professional Tech Interviewer. 
+        Job Description (JD): {data.job_description}
+        Candidate Resume: {data.resume}
+
+        CRITICAL RULES:
+        1. Analyze Resume & JD: Ask one focused question at a time. Align your questions with the JD and verify the skills mentioned in the Resume.
+        2. Dynamic Difficulty: Start with an 'Easy' conceptual question. If the response is strong, increase difficulty to 'Medium' then 'Hard' (scenario-based). If weak, reduce or stabilize the difficulty.
+        3. Time Penalty: If the candidate's answer includes the tag [TIME_OUT], it means they failed to answer within the strict time limit. Penalize their evaluation later.
+        4. Early Termination: If the candidate gives 2 completely irrelevant or extremely poor answers, end the interview early immediately and append the exact string [EARLY_TERMINATION] at the end.
+        5. Standard Termination: Once you have enough signal to generate a final readiness score, conclude politely and append the exact string [END_INTERVIEW] at the end."""
+
         messages = [{"role": "system", "content": system_prompt}]
 
         for msg in data.history:
@@ -64,33 +59,34 @@ def chat_with_ai(data: InterviewHistory):
         return {"ai_response": response.choices[0].message.content}
     
     except Exception as e:
-        return{"error": str(e)}
-
-# Note: /api/evaluate endpoint same paathade unchu, kani daaniki kooda 'data: InterviewHistory' input theeskuntundi kabatti param pass cheyali.
+        return {"error": str(e)}
 
 @app.post("/api/evaluate")
 def evaluate_interview(data: InterviewHistory):
     try:
-        # Evaluate cheyadaniki kotha strict prompt isthunnam
-        messages = [
-            {
-                "role": "system", 
-                "content": 'You are an expert technical interviewer. Review the interview history and provide a final evaluation strictly as a valid JSON object. Do not include any markdown, explanation, or extra text. Use exact schema: {"score": 85, "strengths": ["string", "string"], "improvements": ["string", "string"]}'
-            }
-        ]
+        eval_prompt = f"""Review the entire interview history for the JD: {data.job_description} and Resume: {data.resume}.
+        Provide an objective evaluation strictly as a valid JSON object. No extra text.
+        Calculate the score based on Accuracy, Clarity, Depth, Relevance, and Time Efficiency.
         
-        # History loop
+        Use EXACTLY this JSON schema:
+        {{
+            "readiness_score": 85,
+            "category": "Strong / Average / Needs Improvement",
+            "performance_breakdown": {{"Technical": 80, "Communication": 90, "Problem_Solving": 75}},
+            "strengths": ["string", "string"],
+            "weaknesses": ["string", "string"],
+            "actionable_feedback": ["string", "string"]
+        }}"""
+
+        messages = [{"role": "system", "content": eval_prompt}]
         for msg in data.history:
             messages.append({"role": msg.role, "content": msg.content})
             
-        # AI call (Temperature thakkuva pedithe exact JSON vasthundi)
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=messages,
-            temperature=0.2 
+            temperature=0.1 
         )
-        
-        # Ochina JSON string ni frontend ki return chesthunnam
         return {"evaluation": response.choices[0].message.content}
         
     except Exception as e:

@@ -1,16 +1,21 @@
-# React + Vite
+# 🤖 Hack2Hire Mock Interviewer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An AI-powered mock interview platform that conducts dynamic, voice-enabled technical interviews and generates actionable, real-world readiness reports. This project was developed to bridge the gap between academic theory and real-world engineering interviews.
 
-Currently, two official plugins are available:
+## ✨ Key Features
+- **Two-Way Voice Integration**: Real-time Speech-to-Text (Mic) and AI Text-to-Speech interaction for a human-like experience.
+- **Dynamic Difficulty**: Adjusts question complexity based on candidate performance.
+- **Strict Timer & Early Termination**: Simulates real-world pressure; automatically ends the interview early for completely irrelevant answers to optimize time.
+- **Comprehensive Dashboard**: Generates a detailed JSON-based evaluation report with Readiness Score, Performance Breakdown, Strengths, and Actionable Feedback.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🛠️ Tech Stack
+- **Frontend**: React.js, Native Web Speech API (Live Transcription & Voice Synthesis)
+- **Backend**: FastAPI (Python), Pydantic
+- **AI Engine**: LLaMA-3.3-70b (via Groq API)
 
-## React Compiler
+## 🎥 Project Demo Video
+[👉 Click here to watch the working demo](https://drive.google.com/file/d/1GlON5t5xaB88_YRp1hAKetkq2Keyg-RX/view?usp=drive_link)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+## 👨‍💻 Author
+**[YOUR_NAME]** *B.Tech CSE (Class of 2027) | Malla Reddy College of Engineering & Technology (MRCET)* *Full-Stack AI Developer*
